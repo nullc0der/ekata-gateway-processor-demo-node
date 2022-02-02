@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link href="static/css/index.css" rel="stylesheet" />
+    </head>
+    <body>
+        <div class="w-screen h-screen bg-gray-100 py-4 px-4">
+            <div class="container mx-auto">
+                <div
+                    class="flex flex-col md:flex-row items-center justify-center flex-wrap"
+                >
+                    <button
+                        class="p-2 mt-2 bg-green-500 rounded-md text-white"
+                        id="checkoutBtn"
+                    >
+                        Checkout
+                    </button>
+                </div>
+            </div>
+        </div>
+        <script src="https://gatewayprocessorform.ekata.io/gatewayprocessor.min.js"></script>
+        <script type="text/javascript">
+            const gatewayform = new EkataGatewayProcessorForm({
+                projectID: 'd9db8de9-5412-459a-804c-735460b3706c',
+                onError: (data) => console.log(data),
+                onCloseForm: (reason) => console.log(reason),
+                onSuccess: (data) =>
+                    fetch('/payment-success', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(data),
+                    }),
+            })
+            function showPaymentForm() {
+                fetch('/create-form-id', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                })
+                    .then((response) => response.json())
+                    .then((data) => {
+                        gatewayform.showPaymentForm(data.formID)
+                    })
+            }
+            const checkoutBtn = document.getElementById('checkoutBtn')
+            checkoutBtn.addEventListener('click', (e) => showPaymentForm())
+        </script>
+    </body>
+</html>
